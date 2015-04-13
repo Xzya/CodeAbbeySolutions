@@ -47,7 +47,7 @@ def multiply_mv(m, v):
     for j in range(0, 2):
       result[i] += m[i][j] * v[j]
 
-  return result
+  return tuple(result)
 
 def subtract_vectors(a, b):
   result = (b[0] - a[0], b[1] - a[1])
@@ -82,15 +82,28 @@ def calculate_distance(arrays):
   distance = 0
   for i in range(0, len(arrays[index])):
     distance += ((arrays[1][i][0] - arrays[0][i][0])**2 + (arrays[1][i][1] - arrays[0][i][1])**2)**.5
-
   return distance
+
+def calculate_distance_points(a, b):
+  dist = ((b[0] - a[0])**2 + (b[1] - a[1])**2)**.5
+  return dist
 
 def rotation_matrix_degree(degree):
   # rad = (180 * degree) / math.pi
   rad = degree * math.pi/180
   # R = (normalize((math.cos(rad), math.sin(rad))), normalize((-math.sin(rad), math.cos(rad))))
-  R = (normalize((math.cos(rad), -math.sin(rad))), normalize((math.sin(rad), math.cos(rad))))
+  R = (normalize((math.cos(rad), math.sin(rad))), normalize((-math.sin(rad), math.cos(rad))))
   return R
+
+def find_centroid(a):
+  averagex = 0
+  averagey = 0
+  for i in range(0, len(a)):
+    averagex += a[i][0]
+    averagey += a[i][1]
+  averagex /= len(a)
+  averagey /= len(a)
+  return (averagex, averagey)
 
 # a = (5.4,38.8)
 # b = (28.3,28.8)
@@ -186,128 +199,221 @@ def dist_to_origin(a):
   dist = (a[0]**2 + a[1]**2)**.5
   return dist
 
+def find_nearest_neighbors(p, array, num_of_neigh):
+  # [[distance, to_point]]
+  dist_points = []
+  for i in range(0, len(array)):
+    dist = calculate_distance_points(p, array[i])
+    #if dist is 0 it's the same point, so ignore it
+    if (dist == 0):
+      continue
+    list_entry = [dist, array[i]]
+    dist_points.append(list_entry)
+
+  #sort by distance
+  dist_points = sorted(dist_points, key=operator.itemgetter(0))
+  neighbors = dist_points[:10]
+  # print('dist_points', neighbors)
+  return  neighbors
+
+def has_similar_neigh(neigha, neighb, tolerance=0.2, min_matches=10):
+  matches = 0
+  for i in range(0, len(neigha)):
+    for j in range(0, len(neighb)):
+      # if neighb-telorance <= neigha <= neighb+tolerance
+      if neighb[j][0]-tolerance <= neigha[i][0] and neigha[i][0] <= neighb[j][0]+tolerance:
+        matches += 1
+  if matches >= min_matches:
+    return True
+  return False
+
 sorted_by_dist_origina = sorted(sections[0], key=dist_to_origin)
 sorted_by_dist_originb = sorted(sections[1], key=dist_to_origin)
-
-
 sorted_arrays = [sorted_by_dist_origina, sorted_by_dist_originb]
-#distances list -> [ [distance, vector] ]
-distances = []
-dist_strs = []
-for k in range(0, 2):
-  distance = []
-  neighbours = []
-  dist_str = ""
-  current = sorted_arrays[k][0]
-  for i in range(0, 50):
-    min_dist = 9999999
-    for j in range(i+1, len(sorted_arrays[k])):
-      next = sorted_arrays[k][j]
-      if (next[0] == current[0] and next[1] == current[1]):
-        continue
-      if next in neighbours:
-        continue
-      dist = ((next[0] - current[0])**2 + (next[1] - current[1])**2)**.5
-      if dist < min_dist:
-        min_dist = dist
-        temp = next[:]
-    distance.append([min_dist, current])
-    current = temp
-    neighbours.append(current)
-    dist_str += str(round(min_dist, 1)) + " "
-  distances.append(distance)
-  dist_strs.append(dist_str)
-
-print('distances', distances)
 
 
+# chose the closest point to the origin as the observed point
+# then find n closest neighbors
+observed_point = sorted_by_dist_origina[0]
+observed_point_neigh = find_nearest_neighbors(observed_point, sections[0], 10)
+
+# now search for points in the other array with the same pattern
 matches = []
-dist_strs = [dist_strs[0].split(), dist_strs[1]]
-for i in range(0, len(dist_strs[0]) - 3):
-  pattern = dist_strs[0][i:i+3]
+for i in range(0, n[1]):
+  point = sections[1][i]
+  point_neigh = find_nearest_neighbors(point, sections[1], 10)
 
-  if ('9999999' in pattern):
-    continue
-
-  found = dist_strs[1].find(" ".join(pattern))
-
-  if found != -1:
-
-    # print("searched", " ".join(pattern), "found", dist_strs[1][found:-1])
-
-    for j in range(0, 3):
-      if (found > len(distances[1])):
-        break
-      if [distances[0][i+j][1], distances[1][found+j][1]] not in matches:
-        matches.append([distances[0][i+j][1], distances[1][found+j][1]])#, distances[0][i+j][0] , distances[1][found+j][0])
-
-## reversed
-for i in range(0, len(dist_strs[0]) - 3):
-  pattern = dist_strs[0][i+3:i:-1]
-
-  if ('9999999' in pattern):
-    continue
-
-  found = dist_strs[1].find(" ".join(pattern))
-
-  if found != -1:
-
-    # print("searched", " ".join(pattern), "found", dist_strs[1][found:-1])
-
-    for j in range(0, 3):
-      if (found+j >= len(distances[1])):
-        break
-      if [distances[0][i+j][1], distances[1][found+j][1]] not in matches:
-        matches.append([distances[0][i+j][1], distances[1][found+j][1]])#, distances[0][i+j][0] , distances[1][found+j][0])
-########### /reversed
+  if has_similar_neigh(observed_point_neigh, point_neigh, 0.2, 10):
+    # print('found it')
+    print(observed_point, point)
+    matches.append([observed_point, point])
+#
 
 
-print("matches", matches)
+## the first match should be the right one
+## now calculate the rotation matrix and rotate the vectors
+rotated_vectors = []
+for v in sections[0]:
+  rotated_vectors.append(transform_vector(v, matches[0][0], matches[0][1]))
 
-a = (-3.9, 49.5)
-b = (25.5, 42.7)
+print(rotated_vectors)
 
-##
-averages = []
-for i in range(0, 2):
+## the rotation and alignment might be a bit off
+## we'll brute force by moving it along the axis and then rotate
+## until it's in the right place
+# distance = calculate_distance((rotated_vectors, sections[1]))
+# moved_vectors = rotated_vectors[:]
+# moved_dist = distance
+# j = 0
+# while j < 1000:
+# # while moved_dist > 100:
+#   moving = True
+#   # while moving:
+#   #   moving = False
+#   while True:
+#     ## move right
+#     new_v = []
+#     for v in moved_vectors:
+#       new_v.append(add_vectors(v, (.5,0)))
+#     new_dist = calculate_distance((new_v, sections[1]))
+#     if new_dist < moved_dist:
+#       moved_vectors = new_v
+#       moved_dist = new_dist
+#       moving = True
+#     else:
+#       break
+#   while True:
+#     ## move up
+#     new_v = []
+#     for v in moved_vectors:
+#       new_v.append(add_vectors(v, (0,.5)))
+#     new_dist = calculate_distance((new_v, sections[1]))
+#     if new_dist < moved_dist:
+#       moved_vectors = new_v
+#       moved_dist = new_dist
+#       moving = True
+#     else:
+#       break
+#   while True:
+#     ## move left
+#     new_v = []
+#     for v in moved_vectors:
+#       new_v.append(add_vectors(v, (-.5,0)))
+#     new_dist = calculate_distance((new_v, sections[1]))
+#     if new_dist < moved_dist:
+#       moved_vectors = new_v
+#       moved_dist = new_dist
+#       moving = True
+#     else:
+#       break
+#   while True:
+#     ## move down
+#     new_v = []
+#     for v in moved_vectors:
+#       new_v.append(add_vectors(v, (0,-.5)))
+#     new_dist = calculate_distance((new_v, sections[1]))
+#     if new_dist < moved_dist:
+#       moved_vectors = new_v
+#       moved_dist = new_dist
+#       moving = True
+#     else:
+#       break
+#
+#   ## rotate
+#   k = 0
+#   while k < 1:
+#     k = 1
+#     ## rotate clockwise
+#     new_v = []
+#     for v in moved_vectors:
+#       new_v.append(transform_vector_degree(v, .1))
+#     new_dist = calculate_distance((new_v, sections[1]))
+#     if new_dist < moved_dist:
+#       moved_vectors = new_v
+#       moved_dist = new_dist
+#     else:
+#       break
+#   k = 0
+#   while k < 1:
+#     k = 1
+#     ## rotate anti-clockwise
+#     new_v = []
+#     for v in moved_vectors:
+#       new_v.append(transform_vector_degree(v, -.1))
+#     new_dist = calculate_distance((new_v, sections[1]))
+#     if new_dist < moved_dist:
+#       moved_vectors = new_v
+#       moved_dist = new_dist
+#     else:
+#       break
+#
+#   j += 1
+#   # break
+#
+# print(moved_vectors)
+# print(distance,moved_dist)
 
-  averagex = 0
-  averagey = 0
 
-  for j in range(0, n[i]):
-    averagex += sections[i][j][0]
-    averagey += sections[i][j][1]
 
-  averagex /= len(sections[i])
-  averagey /= len(sections[i])
 
-  averages.append((averagex, averagey))
-  # print(averagex, averagey)
 
-#move centroid to origin
-origin = []
-for i in range(0, n[0]):
-  origin.append(subtract_vectors(averages[0], sections[0][i]))
 
-print("origin", origin)
 
-# #align the centroids
-# R = rotation_matrix(a, b)
-# rotated_vectors = []
+
+
+
+
+
+
+
+
+
+# print("matches", matches)
+#
+# a = (-3.9, 49.5)
+# b = (25.5, 42.7)
+#
+# ##
+# averages = []
+# for i in range(0, 2):
+#
+#   averagex = 0
+#   averagey = 0
+#
+#   for j in range(0, n[i]):
+#     averagex += sections[i][j][0]
+#     averagey += sections[i][j][1]
+#
+#   averagex /= len(sections[i])
+#   averagey /= len(sections[i])
+#
+#   averages.append((averagex, averagey))
+#   # print(averagex, averagey)
+#
+# #move centroid to origin
+# origin = []
 # for i in range(0, n[0]):
-#   rotated_vectors.append(transform_vector(sections[0][i], averages[0], averages[1]))
-##
-
-
-# transform vectors
-resulted_vectors = []
-for v in origin:
-  resulted_vectors.append(transform_vector(v, a, b))
-
-#move centroid back
-origin = []
-for i in range(0, n[0]):
-  origin.append(add_vectors(averages[0], resulted_vectors[i]))
-
-print(origin)
-##############################################################################
+#   origin.append(subtract_vectors(averages[0], sections[0][i]))
+#
+# print("origin", origin)
+#
+# # #align the centroids
+# # R = rotation_matrix(a, b)
+# # rotated_vectors = []
+# # for i in range(0, n[0]):
+# #   rotated_vectors.append(transform_vector(sections[0][i], averages[0], averages[1]))
+# ##
+#
+#
+# # transform vectors
+# resulted_vectors = []
+# for v in origin:
+#   resulted_vectors.append(transform_vector(v, a, b))
+#
+# #move centroid back
+# origin = []
+# for i in range(0, n[0]):
+#   origin.append(add_vectors(averages[0], resulted_vectors[i]))
+#
+# print(origin)
+# ##############################################################################
