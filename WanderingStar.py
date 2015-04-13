@@ -1,0 +1,249 @@
+#input
+# http://www.shodor.org/interactivate/activities/SimplePlot/
+# http://en.wikipedia.org/wiki/Rotation_matrix
+# http://reference.wolfram.com/language/ref/RotationMatrix.html
+# http://www.wolframalpha.com/input/?i=RotationMatrix%5B90+Degree%5D
+# http://www.wolframalpha.com/input/?i=%7B%7B0%2C+-1%7D%2C+%7B1%2C+0%7D%7D+*+%7B1%2C+1%7D
+# http://nghiaho.com/?page_id=671
+# http://math.stackexchange.com/questions/180418/calculate-rotation-matrix-to-align-vector-a-to-vector-b-in-3d
+# after you find the rotation matrix, multiply each vector with the matrix
+# calculate the rotation matrix by centroids ?
+# dot product gives angle
+# cross product gives length?TODO TODO cross product a1a2 b1b2 are actually lengths not points?
+# a 8.994117647058818 2.423529411764707
+# b 7.9529411764705875 -0.6049019607843146
+# |a x b| = a1*b2 - b1*a2 = |-24.7147462514417647991234140715053|
+#  a . b = ||a||||b|| cos 0 = a1*b1 + a2*b2 = 70.0636908881199004800230680507528
+# if a . b = 0  -> theta = pi/2
+# if a . b > 0  -> theta < pi/2
+# if a . b < 0  -> theta > pi/2
+
+def normalize(v):
+  length = (v[0]**2 + v[1]**2)**.5
+  normalized_v = (v[0]/length, v[1]/length)
+  return normalized_v
+
+def cross_product(a, b):
+  cp = a[0] * b[1] - b[0] * a[1]
+  return abs(cp)
+
+def dot_product(a, b):
+  dp = a[0] * b[0] + a[1] * b[1]
+  return dp
+
+def rotation_matrix(a, b):
+  dp = dot_product(a,b)
+  cp = cross_product(a,b)
+
+  #(dp, -cp),(cp,dp) ????
+  # R = (normalize((dp, cp)), normalize((-cp, dp)))  ##TODO good
+  R = (normalize((dp, cp)), normalize((-cp, dp)))
+
+  return R
+
+def multiply_mv(m, v):
+  result = [0,0]
+  for i in range(0, 2):
+    for j in range(0, 2):
+      result[i] += m[i][j] * v[j]
+
+  return result
+
+def subtract_vectors(a, b):
+  result = (b[0] - a[0], b[1] - a[1])
+  return result
+
+def add_vectors(a, b):
+  result = (a[0] + b[0], a[1] + b[1])
+  return result
+
+def transform_vector(v, a, b):
+  R = rotation_matrix(a, b)
+  mv = multiply_mv(R, a)
+  t = subtract_vectors(b, mv)
+
+  new_mv = multiply_mv(R, v)
+  new_v = add_vectors(new_mv, t)
+
+  return new_v
+
+def transform_vector_degree(v, degree):
+  R = rotation_matrix_degree(degree)
+  mv = multiply_mv(R, v)
+  return mv
+
+def calculate_distance(arrays):
+  arrays_lengths = (len(arrays[0]), len(arrays[1]))
+  index = -1
+  if arrays_lengths[0] < arrays_lengths[1]:
+    index = 0
+  else:
+    index = 1
+  distance = 0
+  for i in range(0, len(arrays[index])):
+    distance += ((arrays[1][i][0] - arrays[0][i][0])**2 + (arrays[1][i][1] - arrays[0][i][1])**2)
+
+  return distance
+
+def rotation_matrix_degree(degree):
+  # rad = (180 * degree) / math.pi
+  rad = degree * math.pi/180
+  # R = (normalize((math.cos(rad), math.sin(rad))), normalize((-math.sin(rad), math.cos(rad))))
+  R = (normalize((math.cos(rad), -math.sin(rad))), normalize((math.sin(rad), math.cos(rad))))
+  return R
+
+# a = (5.4,38.8)
+# b = (28.3,28.8)
+# a = (8.994117647058818, 2.423529411764707)
+# b = (7.9529411764705875, -0.6049019607843146)
+# v = (6.00, 48.00)
+# print(transform_vector(v, a, b))
+
+import math
+import operator
+
+n = []
+sections = []
+
+n = [102,102]
+sections = [[(-10.1, -20.8), (-16.8, -12.5), (1.0, 26.8), (11.5, 44.7), (-3.8, -47.5), (36.7, -23.1), (-9.5, 19.5), (13.0, -42.1), (-9.9, 42.2), (16.0, 35.5), (-2.2, 47.0), (16.6, -46.3), (1.2, 26.0), (-28.3, -35.3), (-13.7, 42.8), (-28.7, -3.1), (-11.3, 13.3), (33.2, 21.8), (-16.4, 0.4), (8.1, -11.5), (31.3, -34.6), (46.4, 3.5), (5.4, 38.8), (-33.2, -26.2), (-44.6, 15.0), (-6.8, 46.2), (-19.0, 43.7), (9.9, 9.9), (34.5, 8.1), (-14.2, 21.5), (8.3, 42.3), (16.4, 21.7), (9.7, -47.7), (38.7, -25.8), (43.6, 4.1), (22.5, -42.9), (20.6, -32.6), (29.6, -24.3), (12.1, 44.9), (4.3, 27.6), (41.8, 8.2), (-3.0, 42.0), (38.0, -28.2), (41.4, 19.9), (-3.9, 49.5), (-11.5, -22.2), (38.0, -27.8), (30.4, -21.5), (15.5, -5.6), (-42.5, -4.2), (26.7, -16.2), (28.9, -31.5), (27.5, 25.5), (35.6, 29.1), (-0.5, -46.7), (0.9, -39.2), (-9.5, -14.1), (31.5, -26.8), (28.5, 33.8), (-3.5, 45.3), (-28.5, 0.3), (24.5, 40.0), (26.0, 32.2), (27.5, 15.2), (-2.2, 30.8), (16.3, -6.8), (11.1, -39.5), (31.1, -15.0), (8.0, -17.9), (33.3, -31.9), (-9.9, 41.9), (18.0, -23.3), (37.1, 17.0), (6.2, -1.6), (9.6, -9.6), (36.0, 4.8), (-15.5, -23.4), (36.9, -18.2), (19.9, 13.4), (-11.1, 23.8), (35.1, 7.8), (27.9, -9.4), (12.8, 2.9), (9.4, 9.7), (-38.3, 25.8), (16.4, 1.1), (30.3, 17.1), (11.0, 5.7), (-17.9, 39.2), (-25.7, -24.1), (14.4, 17.9), (26.6, -12.7), (-0.8, 16.1), (31.4, -17.4), (-0.7, 29.3), (-44.1, 7.1), (31.4, 18.5), (10.3, -36.9), (-20.3, 23.4), (17.3, -34.9), (43.8, 17.6), (-39.6, -29.1)],[(9.0, -6.8), (37.1, 30.8), (-5.1, -45.3), (20.2, -36.0), (12.1, -15.9), (14.5, -47.8), (16.7, 39.3), (-23.2, 40.4), (44.8, -15.8), (21.2, -26.5), (-46.5, -9.0), (-14.2, -36.8), (-19.1, -42.6), (16.8, -2.8), (23.1, -32.9), (-9.7, 6.2), (1.2, 14.8), (45.9, 13.0), (18.3, 23.5), (24.9, -40.5), (-4.9, -39.5), (6.2, -40.8), (-37.6, -19.0), (29.4, 8.5), (40.8, -1.7), (-43.7, 20.0), (-16.6, -15.9), (8.5, -31.5), (-20.6, -15.0), (27.5, -36.4), (45.5, 20.4), (-5.5, -42.1), (-27.0, 32.8), (-45.5, -6.9), (25.7, 39.6), (36.5, 30.9), (42.9, 12.8), (17.7, 25.6), (8.2, 40.6), (-1.7, 28.1), (14.0, -44.0), (6.5, 23.9), (16.5, 39.0), (19.2, -9.4), (38.8, -12.9), (18.5, -41.2), (21.8, 19.6), (-22.1, 9.2), (39.2, -2.4), (17.0, -6.1), (28.3, -0.5), (38.4, -12.3), (11.7, 12.1), (38.1, -15.9), (-22.4, -41.7), (35.9, 20.7), (-16.1, 39.1), (-10.8, -9.9), (8.0, -15.4), (23.7, 38.8), (17.4, 1.5), (2.5, -21.8), (2.2, -41.2), (-34.6, 15.1), (-37.4, -8.7), (18.5, 20.5), (-10.7, -48.6), (18.1, -38.1), (32.5, 30.4), (22.6, 35.7), (44.3, -20.3), (2.7, 23.4), (28.3, 28.8), (-14.7, -15.4), (-5.5, 47.9), (-46.0, 0.0), (15.2, -16.3), (-22.0, 43.5), (24.0, -30.7), (-30.4, 25.7), (25.5, 42.7), (45.1, -5.9), (17.9, 1.4), (9.5, 45.1), (-18.5, 44.0), (21.3, 41.2), (5.8, -16.3), (-16.4, -4.9), (40.9, 6.3), (-29.9, -10.5), (17.6, -46.5), (44.0, 0.2), (35.8, -2.7), (-44.4, -8.0), (5.8, 19.3), (25.8, 6.1), (-34.9, -34.6), (-20.2, 12.0), (13.6, 41.7), (24.0, -24.3), (19.6, -29.6), (18.3, 19.7)]]
+
+###############################
+# for i in range(0, 2):
+#   n.append(int(input()))
+#
+#   section = []
+#   for j in range(0, n[i]):
+#     (x, y) = (float(x) for x in input().split())
+#     # since some points on the edge might be absent,
+#     # ignore all points that have a length > 40
+#     # if ((x**2 + y**2)**.5 <= 40):
+#     section.append((x,y))
+#
+#   sections.append(section)
+################################
+
+
+# print(len(sections[0]), len(sections[1]))
+
+# calculate sections centroids
+averages = []
+for i in range(0, 2):
+
+  averagex = 0
+  averagey = 0
+
+  for j in range(0, n[i]):
+    averagex += sections[i][j][0]
+    averagey += sections[i][j][1]
+
+  averagex /= len(sections[i])
+  averagey /= len(sections[i])
+
+  averages.append((averagex, averagey))
+  # print(averagex, averagey)
+
+# #align the centroids
+R = rotation_matrix(averages[0], averages[1])
+rotated_vectors = []
+for i in range(0, n[0]):
+  rotated_vectors.append(transform_vector(sections[0][i], averages[0], averages[1]))
+
+
+#distance minimization
+distances = []
+temp_vector = rotated_vectors#sections[0]#rotated_vectors
+for i in range(1, 360):
+  rotated_vector = []
+  for j in range(0, n[0]):
+    rotated_vector.append(transform_vector_degree(temp_vector[j], i))
+
+  distance = calculate_distance((rotated_vector, sections[1]))
+
+  distances.append((i,distance,rotated_vector))
+
+  temp_vector = rotated_vector
+
+
+
+distances = sorted(distances, key=operator.itemgetter(1))
+
+print(distances[0][2])
+for i in range(0, 20):
+  toString = (str(distances[i][2]).replace('[','(')).replace(']',')')
+  print(toString)
+  # print(distances[i][0], distances[i][2])
+
+
+
+# #search for shape
+# # sort the point by distance from origin
+# def dist_to_origin(a):
+#   dist = (a[0]**2 + a[1]**2)**.5
+#   return dist
+#
+# sorted_by_dist_origina = sorted(sections[0], key=dist_to_origin)
+# sorted_by_dist_originb = sorted(sections[1], key=dist_to_origin)
+#
+#
+# sorted_arrays = [sorted_by_dist_origina, sorted_by_dist_originb]
+# #distances list -> [ [distance, vector] ]
+# distances = []
+# dist_strs = []
+# for k in range(0, 2):
+#   distance = []
+#   neighbours = []
+#   dist_str = ""
+#   current = sorted_arrays[k][0]
+#   for i in range(0, 90):
+#     min_dist = 9999999
+#     for j in range(i+1, len(sorted_arrays[k])):
+#       next = sorted_arrays[k][j]
+#       if (next[0] == current[0] and next[1] == current[1]):
+#         continue
+#       if next in neighbours:
+#         continue
+#       dist = ((next[0] - current[0])**2 + (next[1] - current[1])**2)**.5
+#       if dist < min_dist:
+#         min_dist = dist
+#         temp = next[:]
+#     distance.append([min_dist, current])
+#     current = temp
+#     neighbours.append(current)
+#     dist_str += str(round(min_dist)) + " "
+#   distances.append(distance)
+#   dist_strs.append(dist_str)
+#
+# # print(distances)
+#
+#
+# matches = []
+# dist_strs = [dist_strs[0].split(), dist_strs[1]]
+# for i in range(0, len(dist_strs[0]) - 3):
+#   pattern = dist_strs[0][i:i+3]
+#
+#   if ('9999999' in pattern):
+#     continue
+#
+#   found = dist_strs[1].find(" ".join(pattern))
+#
+#   if found != -1:
+#
+#     # print("searched", " ".join(pattern), "found", dist_strs[1][found:-1])
+#
+#     for j in range(0, 3):
+#       if (found > len(distances[1])):
+#         break
+#       if [distances[0][i+j][1], distances[1][found+j][1]] not in matches:
+#         matches.append([distances[0][i+j][1], distances[1][found+j][1]])#, distances[0][i+j][0] , distances[1][found+j][0])
+#
+# print("matches", matches)
+#
+# a = (-3.9, 49.5)
+# b = (25.5, 42.7)
+#
+# resulted_vectors = []
+# for v in sections[0]:
+#   resulted_vectors.append(transform_vector(v, a, b))
+#
+# print(resulted_vectors)
