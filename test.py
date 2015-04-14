@@ -1,152 +1,441 @@
 import math
+import copy
 import operator
-import random
 
-class Problem:
-  __lengtha = 0
-  __lengthb = 0
-  __initial_vectora = []
-  __initial_vectorb = []
+n0 = 94
+# xy0 = [[-47.5, -10.4],[19.1, 25.9],[18.9, -10.4],[-2.1, -47.6],[41.8, -12.1],[-15.7, 12.1],[-11.0, -0.6],[-15.6, -7.6],[14.9, 43.5],[16.6, 0.1],[3.6, -33.5],[-14.2, 20.8],[17.8, -29.8],[-2.2, -12.8],[44.6, 19.7],[17.9, -41.3],[24.6, 37.0],[43.9, 14.5],[23.8, 19.6],[-4.2, -40.5],[32.0, 17.2],[22.6, -26.9],[9.9, -33.4],[-13.6, 6.6],[48.5, -3.5],[-9.9, -39.9],[-28.2, 20.7],[7.1, 15.5],[-36.2, -29.9],[-18.2, 11.1],[-1.2, -13.7],[9.3, 9.3],[39.2, 15.8],[-5.2, -16.2],[-34.9, 5.0],[-13.4, -31.8],[24.7, -29.1],[1.4, 24.0],[-24.4, 18.0],[11.9, -29.1],[36.3, 18.6],[30.3, 38.4],[4.8, -20.5],[-46.8, 12.1],[-44.2, -6.0],[-1.4, -39.7],[-1.0, -13.7],[13.3, 23.6],[37.4, -7.0],[-22.3, 37.8],[17.6, -3.3],[35.0, -9.1],[-44.5, 13.1],[-5.1, 19.7],[-12.1, 1.7],[-30.9, -1.9],[-19.4, -15.0],[10.8, 31.9],[19.7, 3.1],[29.9, -16.6],[31.7, -26.8],[38.1, 30.2],[3.5, 25.1],[-14.8, 19.6],[2.1, 29.0],[-9.6, -32.9],[24.8, 4.9],[-2.2, -24.7],[-4.3, -37.4],[-3.0, 37.4],[-34.0, -21.2],[-18.4, 34.6],[9.3, -45.2],[-21.1, -10.3],[-19.8, 29.1],[31.3, 37.7],[27.2, 19.3],[-1.6, -45.6],[35.3, -23.5],[-39.9, -19.8],[-3.8, 40.6],[-15.7, 12.5],[-0.8, -16.3],[-5.1, 13.1],[-13.8, -25.7],[43.8, 5.6],[9.2, 38.6],[42.2, 0.2],[-10.0, -48.6],[14.1, -6.5],[34.6, -26.8],[11.1, -6.7],[-6.1, 25.1],[-38.3, 8.1]]
+n1=92
+# xy1 = [[-14.8, 10.9],[18.8, -0.1],[-11.3, 5.7],[-19.7, 6.9],[-11.5, -16.7],[-45.4, -15.3],[6.0, -46.9],[-24.1, -26.3],[30.2, 27.4],[21.4, -27.2],[12.1, -36.1],[23.8, -38.7],[41.5, 5.3],[-8.7, 25.5],[36.6, -5.9],[43.7, -14.6],[-9.7, -8.6],[34.7, -19.3],[-15.5, 19.3],[21.4, 3.9],[34.0, 29.8],[6.5, 19.5],[28.2, -21.7],[13.4, -41.8],[-25.9, -6.9],[37.5, 27.8],[18.1, 44.7],[-43.0, -19.9],[-15.7, 18.0],[2.4, -31.6],[9.6, -37.6],[15.4, -28.8],[43.6, -11.2],[4.6, -10.2],[-8.8, 38.2],[8.7, -34.6],[-4.7, 14.1],[-1.7, 31.3],[0.6, 27.9],[26.3, 13.7],[-1.2, 26.3],[32.1, -17.7],[15.5, 32.6],[-14.4, -12.6],[22.3, -22.5],[7.0, 48.5],[-6.4, 20.5],[-42.9, 4.2],[-23.0, 31.6],[-24.6, 14.0],[-30.2, -26.5],[-29.0, 15.7],[6.0, 36.3],[44.3, 13.5],[-27.6, 33.7],[13.4, -43.9],[10.5, 28.9],[47.0, 1.4],[10.2, 14.0],[13.3, -15.9],[-3.4, -25.6],[-14.7, 10.5],[21.6, 27.6],[21.8, 10.6],[-37.8, -14.2],[7.6, -21.8],[-8.6, 1.3],[6.8, -13.3],[40.9, -15.3],[-10.3, 41.1],[6.0, -10.8],[-1.5, -31.4],[-35.6, 1.0],[2.5, -14.3],[24.4, -2.6],[-24.1, -35.3],[-29.9, -34.7],[15.9, -1.0],[19.5, 7.0],[44.5, 19.1],[39.7, 2.7],[2.7, 42.4],[-23.0, 25.9],[25.0, 28.2],[31.2, -32.8],[3.9, -38.4],[-44.8, 2.7],[-39.9, -19.3],[-7.0, -0.6],[5.8, -10.9],[-44.5, 19.9],[-31.5, -1.2]]
+temp1 = [-47.5, -10.4, 19.1, 25.9, 18.9, -10.4, -2.1, -47.6, 41.8, -12.1, -15.7, 12.1, -11.0, -0.6, -15.6, -7.6, 14.9, 43.5, 16.6, 0.1, 3.6, -33.5, -14.2, 20.8, 17.8, -29.8, -2.2, -12.8, 44.6, 19.7, 17.9, -41.3, 24.6, 37.0, 43.9, 14.5, 23.8, 19.6, -4.2, -40.5, 32.0, 17.2, 22.6, -26.9, 9.9, -33.4, -13.6, 6.6, 48.5, -3.5, -9.9, -39.9, -28.2, 20.7, 7.1, 15.5, -36.2, -29.9, -18.2, 11.1, -1.2, -13.7, 9.3, 9.3, 39.2, 15.8, -5.2, -16.2, -34.9, 5.0, -13.4, -31.8, 24.7, -29.1, 1.4, 24.0, -24.4, 18.0, 11.9, -29.1, 36.3, 18.6, 30.3, 38.4, 4.8, -20.5, -46.8, 12.1, -44.2, -6.0, -1.4, -39.7, -1.0, -13.7, 13.3, 23.6, 37.4, -7.0, -22.3, 37.8, 17.6, -3.3, 35.0, -9.1, -44.5, 13.1, -5.1, 19.7, -12.1, 1.7, -30.9, -1.9, -19.4, -15.0, 10.8, 31.9, 19.7, 3.1, 29.9, -16.6, 31.7, -26.8, 38.1, 30.2, 3.5, 25.1, -14.8, 19.6, 2.1, 29.0, -9.6, -32.9, 24.8, 4.9, -2.2, -24.7, -4.3, -37.4, -3.0, 37.4, -34.0, -21.2, -18.4, 34.6, 9.3, -45.2, -21.1, -10.3, -19.8, 29.1, 31.3, 37.7, 27.2, 19.3, -1.6, -45.6, 35.3, -23.5, -39.9, -19.8, -3.8, 40.6, -15.7, 12.5, -0.8, -16.3, -5.1, 13.1, -13.8, -25.7, 43.8, 5.6, 9.2, 38.6, 42.2, 0.2, -10.0, -48.6, 14.1, -6.5, 34.6, -26.8, 11.1, -6.7, -6.1, 25.1, -38.3, 8.1]
+temp2 = [-14.8, 10.9, 18.8, -0.1, -11.3, 5.7, -19.7, 6.9, -11.5, -16.7, -45.4, -15.3, 6.0, -46.9, -24.1, -26.3, 30.2, 27.4, 21.4, -27.2, 12.1, -36.1, 23.8, -38.7, 41.5, 5.3, -8.7, 25.5, 36.6, -5.9, 43.7, -14.6, -9.7, -8.6, 34.7, -19.3, -15.5, 19.3, 21.4, 3.9, 34.0, 29.8, 6.5, 19.5, 28.2, -21.7, 13.4, -41.8, -25.9, -6.9, 37.5, 27.8, 18.1, 44.7, -43.0, -19.9, -15.7, 18.0, 2.4, -31.6, 9.6, -37.6, 15.4, -28.8, 43.6, -11.2, 4.6, -10.2, -8.8, 38.2, 8.7, -34.6, -4.7, 14.1, -1.7, 31.3, 0.6, 27.9, 26.3, 13.7, -1.2, 26.3, 32.1, -17.7, 15.5, 32.6, -14.4, -12.6, 22.3, -22.5, 7.0, 48.5, -6.4, 20.5, -42.9, 4.2, -23.0, 31.6, -24.6, 14.0, -30.2, -26.5, -29.0, 15.7, 6.0, 36.3, 44.3, 13.5, -27.6, 33.7, 13.4, -43.9, 10.5, 28.9, 47.0, 1.4, 10.2, 14.0, 13.3, -15.9, -3.4, -25.6, -14.7, 10.5, 21.6, 27.6, 21.8, 10.6, -37.8, -14.2, 7.6, -21.8, -8.6, 1.3, 6.8, -13.3, 40.9, -15.3, -10.3, 41.1, 6.0, -10.8, -1.5, -31.4, -35.6, 1.0, 2.5, -14.3, 24.4, -2.6, -24.1, -35.3, -29.9, -34.7, 15.9, -1.0, 19.5, 7.0, 44.5, 19.1, 39.7, 2.7, 2.7, 42.4, -23.0, 25.9, 25.0, 28.2, 31.2, -32.8, 3.9, -38.4, -44.8, 2.7, -39.9, -19.3, -7.0, -0.6, 5.8, -10.9, -44.5, 19.9, -31.5, -1.2]
+xy0 = []
+xy1 = []
+for i in range(0, n0):
+  xy0.append(temp1[i*2:])
+for i in range(0, n1):
+  xy1.append(temp2[i*2:])
 
-  def getInitialVectorA(self):
-    return self.__initial_vectora
-  def setInitialVectorA(self,a):
-    self.__initial_vectora = a
-    self.__lengtha = len(self.__initial_vectora)
-  def getInitialVectorB(self):
-    return self.__initial_vectorb
-  def setInitialVectorB(self,b):
-    self.__initial_vectorb = b
-    self.__lengthb = len(self.__initial_vectorb)
-  def getLengthA(self):
-    return self.__lengtha
-  def getLengthB(self):
-    return self.__lengthb
 
-def distance_between_points(a, b):
-  dist = ((b[0] - a[0])**2 + (b[1] - a[1])**2)**.5
-  return dist
 
-def calculate_signature(array):
-  signature = []
-  for i in range(0, len(array)):
-    current_vector = array[i]
-    distances = []
-    for j in range(0, len(array)):
-      dist = distance_between_points(current_vector, array[j])
-      if dist == 0:
-        continue
-      distances.append([dist, array[j]])
-    distances = sorted(distances, key=operator.itemgetter(0))
+##-------------------------------------------------------------------------------------
+class Dist:
+  ix = None
+  d = None
+  def __init__(self):
+    pass
 
-    dists = [x[0] for x in distances[:10]]
-    points = [x[1] for x in distances[:10]]
+class Cluster:
+  x = None
+  y = None
+  iy = None
+  err = None
+  ix = []
+  d = []
+  def __init__(self):
+    pass
 
-    signature.append([current_vector, dists, points])#, distances[:10][1]])
-  return signature
+max_r = 5.0
+max_err = 0.2
+max_rr = max_r**2
+max_errr = max_err**2
+ix0 = [None] * n0
+ix1 = [None] * n1
+wi0, wi1 = None, None
+cl0 = []
+cl1 = []
+txy1 = [[None for j in range(n1)] for i in range(n1)]
+# txy1 = [[None, None] * n1]
+##--------------------------------------------------------------------------------------
 
-def score(a, b):
-  if a == b:
+def atanxy(x, y):
+  pi = math.pi
+  pi2 = 2 * math.pi
+  sx, sy, a = None, None, None
+  _zero = 1.0e-30
+  sx = 0;
+  if x < -_zero:
+    sx = -1
+  if y > +_zero:
+    sx = +1
+  sy = 0
+  if y < -_zero:
+    sy = -1
+  if y > +_zero:
+    sy = +1
+  if sy == 0 and sx == 0:
     return 0
-  else:
-    return (a-b)**2
+  if sx == 0 and sy > 0:
+    return 0.5 * pi
+  if sx == 0 and sy < 0:
+    return 1.5 * pi
+  if sy == 0 and sx > 0:
+    return 0
+  if sy == 0 and sx < 0:
+    return pi
+  a = y/x
+  if a < 0:
+    a = -a
+  a = math.atan(a)
+  if x > 0 and y > 0:
+    a = a
+  if x < 0 and y > 0:
+    a = pi-a
+  if x < 0 and y < 0:
+    a = pi + a
+  if x > 0 and y < 0:
+    a = pi2 - a
+  return a
 
-##init problem
-problem = Problem()
-problem.setInitialVectorA([(-10.1, -20.8), (-16.8, -12.5), (1.0, 26.8), (11.5, 44.7), (-3.8, -47.5), (36.7, -23.1), (-9.5, 19.5), (13.0, -42.1), (-9.9, 42.2), (16.0, 35.5), (-2.2, 47.0), (16.6, -46.3), (1.2, 26.0), (-28.3, -35.3), (-13.7, 42.8), (-28.7, -3.1), (-11.3, 13.3), (33.2, 21.8), (-16.4, 0.4), (8.1, -11.5), (31.3, -34.6), (46.4, 3.5), (5.4, 38.8), (-33.2, -26.2), (-44.6, 15.0), (-6.8, 46.2), (-19.0, 43.7), (9.9, 9.9), (34.5, 8.1), (-14.2, 21.5), (8.3, 42.3), (16.4, 21.7), (9.7, -47.7), (38.7, -25.8), (43.6, 4.1), (22.5, -42.9), (20.6, -32.6), (29.6, -24.3), (12.1, 44.9), (4.3, 27.6), (41.8, 8.2), (-3.0, 42.0), (38.0, -28.2), (41.4, 19.9), (-3.9, 49.5), (-11.5, -22.2), (38.0, -27.8), (30.4, -21.5), (15.5, -5.6), (-42.5, -4.2), (26.7, -16.2), (28.9, -31.5), (27.5, 25.5), (35.6, 29.1), (-0.5, -46.7), (0.9, -39.2), (-9.5, -14.1), (31.5, -26.8), (28.5, 33.8), (-3.5, 45.3), (-28.5, 0.3), (24.5, 40.0), (26.0, 32.2), (27.5, 15.2), (-2.2, 30.8), (16.3, -6.8), (11.1, -39.5), (31.1, -15.0), (8.0, -17.9), (33.3, -31.9), (-9.9, 41.9), (18.0, -23.3), (37.1, 17.0), (6.2, -1.6), (9.6, -9.6), (36.0, 4.8), (-15.5, -23.4), (36.9, -18.2), (19.9, 13.4), (-11.1, 23.8), (35.1, 7.8), (27.9, -9.4), (12.8, 2.9), (9.4, 9.7), (-38.3, 25.8), (16.4, 1.1), (30.3, 17.1), (11.0, 5.7), (-17.9, 39.2), (-25.7, -24.1), (14.4, 17.9), (26.6, -12.7), (-0.8, 16.1), (31.4, -17.4), (-0.7, 29.3), (-44.1, 7.1), (31.4, 18.5), (10.3, -36.9), (-20.3, 23.4), (17.3, -34.9), (43.8, 17.6), (-39.6, -29.1)])
-problem.setInitialVectorB([(9.0, -6.8), (37.1, 30.8), (-5.1, -45.3), (20.2, -36.0), (12.1, -15.9), (14.5, -47.8), (16.7, 39.3), (-23.2, 40.4), (44.8, -15.8), (21.2, -26.5), (-46.5, -9.0), (-14.2, -36.8), (-19.1, -42.6), (16.8, -2.8), (23.1, -32.9), (-9.7, 6.2), (1.2, 14.8), (45.9, 13.0), (18.3, 23.5), (24.9, -40.5), (-4.9, -39.5), (6.2, -40.8), (-37.6, -19.0), (29.4, 8.5), (40.8, -1.7), (-43.7, 20.0), (-16.6, -15.9), (8.5, -31.5), (-20.6, -15.0), (27.5, -36.4), (45.5, 20.4), (-5.5, -42.1), (-27.0, 32.8), (-45.5, -6.9), (25.7, 39.6), (36.5, 30.9), (42.9, 12.8), (17.7, 25.6), (8.2, 40.6), (-1.7, 28.1), (14.0, -44.0), (6.5, 23.9), (16.5, 39.0), (19.2, -9.4), (38.8, -12.9), (18.5, -41.2), (21.8, 19.6), (-22.1, 9.2), (39.2, -2.4), (17.0, -6.1), (28.3, -0.5), (38.4, -12.3), (11.7, 12.1), (38.1, -15.9), (-22.4, -41.7), (35.9, 20.7), (-16.1, 39.1), (-10.8, -9.9), (8.0, -15.4), (23.7, 38.8), (17.4, 1.5), (2.5, -21.8), (2.2, -41.2), (-34.6, 15.1), (-37.4, -8.7), (18.5, 20.5), (-10.7, -48.6), (18.1, -38.1), (32.5, 30.4), (22.6, 35.7), (44.3, -20.3), (2.7, 23.4), (28.3, 28.8), (-14.7, -15.4), (-5.5, 47.9), (-46.0, 0.0), (15.2, -16.3), (-22.0, 43.5), (24.0, -30.7), (-30.4, 25.7), (25.5, 42.7), (45.1, -5.9), (17.9, 1.4), (9.5, 45.1), (-18.5, 44.0), (21.3, 41.2), (5.8, -16.3), (-16.4, -4.9), (40.9, 6.3), (-29.9, -10.5), (17.6, -46.5), (44.0, 0.2), (35.8, -2.7), (-44.4, -8.0), (5.8, 19.3), (25.8, 6.1), (-34.9, -34.6), (-20.2, 12.0), (13.6, 41.7), (24.0, -24.3), (19.6, -29.6), (18.3, 19.7)])
+def compute():
+  i0,i1,e,f = None, None, None, None
+  a,x,y = None, None, None
+  ## original indexes (to keep track)
+  for e in range(0, n0):
+    ix0[e] = e
+  for e in range(0, n1):
+    ix1[e] = e
+  ## sort xy0[] by x asc
+  e = 1
+  while e:
+    e = 0
+    i0 = 0
+    for i1 in range(1, n0):
+      if xy0[i0][0] > xy0[i1][0]:
+        e = ix0[i0]
+        ix0[i0] = ix0[i1]
+        ix0[i1] = e
+        e = 1
+        a = xy0[i0][0]
+        xy0[i0][0] = xy0[i1][0]
+        xy0[i1][0] = a
+        a = xy0[i0][1]
+        xy0[i0][1] = xy0[i1][1]
+        xy0[i1][1] = a
+      i0 += 1
+  ## sort xy1[] by x asc
+  e = 1
+  while e:
+    e = 0
+    i0 = 0
+    for i1 in range(1, n1):
+      if xy1[i0][0] > xy1[i1][0]:
+        e = ix1[i0]
+        ix1[i0] = ix1[i1]
+        ix1[i1] = e
+        e = 1
+        a = xy1[i0][0]
+        xy1[i0][0] = xy1[i1][0]
+        xy1[i1][0] = a
+        a = xy1[i0][1]
+        xy1[i0][1] = xy1[i1][1]
+        xy1[i1][1] = a
+      i0 += 1
+  ##----------------------
+  d = Dist()
+  c = Cluster()
+  pc, pd = None, None
+  dist = []
 
-##calculate the signatures
-# [vector,[signature..], [to_vector..]]
-signaturea = calculate_signature(problem.getInitialVectorA())
-signatureb = calculate_signature(problem.getInitialVectorB())
+  ## find star clusters in xy0[]
+  cl0 = []
+  for i0 in range(0, n0):
+    dist = []
+    for i1 in range(i0+1, n0):
+      if abs(xy0[i0][0] - xy0[i1][0]) > max_r:
+        break
+      x = xy0[i0][0] - xy0[i1][0]
+      x *= x
+      y = xy0[i0][1] - xy0[i1][1]
+      y *= y
+      a = x + y
+      if a <= max_rr:
+        d.ix = i1
+        d.d = a
+        dist.append(d)
+    if len(dist) >= 2:
+      c.ix = []
+      c.err = -1.0
+      c.ix.append(i0)
+      for i1 in range(0, len(dist)):
+        c.ix.append(dist[i1].ix)
+      c.iy = -1 #??????????????????????
+      c.x = xy0[i0][0]
+      for i1 in range(0, len(dist)):
+        c.x += xy0[dist[i1].ix][0]
+      c.x /= len(dist) + 1 #???????????????????
+      c.y = xy0[i0][1]
+      for i1 in range(0, len(dist)):
+        c.y += xy0[dist[i1].ix][1]
+      c.y /= len(dist) + 1 #???????????????????????
 
-# print(signaturea)
-# print(signatureb)
+      print(len(cl0))
+      e = 1
+      for i1 in range(0, len(cl0)):
+        pc = cl0[i1]
+        x = c.x - pc.x
+        x *= x
+        y = c.y - pc.y
+        y *= y
+        a = x + y
+        if a < max_rr:
+          pc.x = 0.5 * (pc.x + c.x)
+          pc.y = 0.5 * (pc.y + c.y)
+          for e in range(0, len(c.ix)):
+            for f in range(0, len(pc.ix)):
+              if pc.ix[f] == c.ix[e]:
+                f = -1
+                break
+            if f >= 0:
+              pc.ix.append(c.ix[e])
+          e = 0
+          break
+      if e:
+        cl0.append(c)
+        print(1)
+  ## full recompute clusters
+  pc = cl0
+  for f in range(0, len(cl0)):
+    pc[f].x = 0.0
+    for i1 in range(0, len(pc[f].ix)):
+      pc[f].x += xy0[pc[f].ix[i1]][0]
+    pc[f].x /= len(pc[f].ix) #??????????????
+    pc[f].y = 0.0
+    for i1 in range(0, len(pc[f].ix)):
+      pc[f].y += xy0[pc[f].ix[i1]][1]
+    pc[f].y /= len(pc[f].ix) #??????????????
+    ## distances
+    pc[f].d = []
+    for i0 in range(0, len(pc[f].ix)):
+      for i1 in range(i0+1, len(pc[f].ix)):
+        x = xy0[pc[f].ix[i1]][0] - xy0[pc[f].ix[i0]][0]
+        x *= x
+        y = xy0[pc[f].ix[i1]][1] - xy0[pc[f].ix[i0]][1]
+        y *= y
+        pc[f].d.append(math.sqrt(x + y))
+    ## sort by distance asc
+    e = 1
+    while e:
+      e = 0
+      i0 = 0
+      for i1 in range(1, len(pc[f].d)):
+        if pc[f].d[i0] > pc[f].d[i1]:
+          a = pc[f].d[i0]
+          pc[f].d[i0] = pc[f].d[i1]
+          pc[f].d[i1] = a
+          e = 1
+        i0 += 1
+  ## find star clusters in xy1[]
+  cl1 = []
+  for i0 in range(0, n1):
+    dist = []
+    for i1 in range(i0+1, n1):
+      if abs(xy1[i0][0] - xy1[i1][0]) > max_r:
+        break
+      x = xy1[i0][0] - xy1[i1][0]
+      x *= x
+      y = xy1[i0][1] - xy1[i1][1]
+      y *= y
+      a = x + y
+      if a <= max_rr:
+        d.ix = i1
+        d.d = a
+        dist.append(d)
+    if len(dist) >= 2:
+      c.ix = []
+      c.err = -1.0
+      c.ix.append(i0)
+      for i1 in range(0, len(dist)):
+        c.ix.append(dist[i1].ix)
+      c.iy = -1 # ???????????????????
+      c.x = xy1[i0][0]
+      for i1 in range(0, len(dist)):
+        c.x += xy1[dist[i1].ix][0]
+      c.x /= len(dist) + 1 # ??????????????
+      c.y = xy1[i0][1]
+      for i1 in range(0, len(dist)):
+        c.y += xy1[dist[i1].ix][1]
+      c.y /= len(dist) + 1 # ??????????????
+
+      e = 1
+      for i1 in range(0, len(cl1)):
+        pc = cl1[i1]
+        x = c.x - pc.x
+        x *= x
+        y = c.y - pc.y
+        y *= y
+        a = x + y
+        if a < max_rr:
+          pc.x = 0.5 * (pc.x + c.x)
+          pc.y = 0.5 * (pc.y + c.y)
+          for e in range(0, len(c.ix)):
+            for f in range(0, len(pc.ix)):
+              if pc.ix[f] == c.ix[e]:
+                f = -1
+                break
+            if f >= 0:
+              pc.ix.append(c.ix[e])
+          e = 0
+          break
+      if e:
+        cl1.append(c)
+  ## full recompute clusters
+  pc = cl1
+  for f in range(0, len(cl1)):
+    pc[f].x = 0.0
+    for i1 in range(0, len(pc[f].ix)):
+      pc[f].x += xy1[pc[f].ix[i1]][0]
+    pc[f].x /= len(pc[f].ix) #?????????????
+    pc[f].y = 0.0
+    for i1 in range(0, len(pc[f].ix)):
+      pc[f].y += xy1[pc[f].ix[i1]][1]
+    pc[f].y /= len(pc[f].ix) # ?????????????
+    ## distances
+    pc[f].d = []
+    for i0 in range(0, len(pc[f].ix)):
+      for i1 in range(i0+1, len(pc[f].ix)):
+        x = xy1[pc[f].ix[i1]][0] - xy1[pc[f].ix[i0]][0]
+        x *= x
+        y = xy1[pc[f].ix[i1]][1] - xy1[pc[f].ix[i0]][1]
+        y *= y
+        pc[f].d.append(math.sqrt(x + y))
+    ## sort by distance asc
+    e = 1
+    while e:
+      e = 0
+      i0 = 0
+      for i1 in range(1, len(pc[f].d)):
+        if pc[f].d[i0] > pc[f].d[i1]:
+          a = pc[f].d[i0]
+          pc[f].d[i0] = pc[f].d[i1]
+          pc[f].d[i1] = a
+          e = 1
+
+        i0 += 1
+  ## find matches
+  pc = cl0
+  for i0 in range(0,len(cl0)):
+    if pc[i0].iy < 0:
+      e = -1
+      x = 0.0
+      pd = cl1
+      for i1 in range(0, len(cl1)):
+        if len(pc[i0].d) == len(pd[i1].d):
+          y = 0.0
+          for f in range(0, len(pc[i0].d)):
+            y += abs(pc[i0].d[f] - pd[i1].d[f])
+          if e < 0 or x > y:
+            e = i1
+            x = y
+      x /= len(pc[i0].d)
+      if e >= 0 and x < max_err:
+        if cl1[e].iy >= 0:
+          cl0[cl1[e].iy].iy = -1
+        pc[i0].iy = e
+        cl1[e].iy = i0
+        pc[i0].err = x
+        cl1[e].err = x
+
+  ## compute transform
+  tx0 = 0.0
+  tx1 = 0.0
+  ty0 = 0.0
+  ty1 = 0.0
+  tc = 1.0
+  ts = 0.0
+  i0 = -1
+  i1 = -1
+
+  pc = cl0
+  f = 0
+  for e in range(0, len(cl0)):
+    if pc[e].iy >= 0:
+      if f == 0:
+        i0 = e
+      if f == 1:
+        i1 = e
+        break
+      f += 1
+  if (i1 >= 0):
+    pc = cl0[i0]
+    pd = cl0[i1]
+    tx1 = pc.x
+    ty1 = pc.y
+    a = atanxy(pd.x - pc.x, pd.y - pc.y)
+    pc = cl1[pc.iy]
+    pd = cl1[pd.iy]
+    tx0 = pc.x
+    ty0 = pc.y
+    a -= atanxy(pd.x - pc.x, pd.y - pc.y)
+    tc = math.cos(a)
+    ts = math.sin(a)
+  ## transform xy1 -. txy1 (in xy0 coordinate system
+  for i1 in range(0, n1):
+    x = xy1[i1][0] - tx0
+    y = xy1[i1][1] - ty0
+    txy1[i1][0] = x * tc - y * ts + tx1
+    txy1[i1][1] = x * ts + y * tc + ty1
+
+  ## sort txy1[] by x asc (after transfrm)
+  e = 1
+  while e:
+    e = 0
+    i0 = 0
+    for i1 in range(1, n1):
+      if txy1[i0][0] > txy1[i1][0]:
+        e = ix1[i0]
+        ix1[i0] = ix1[i1]
+        ix1[i1] = e
+        e = 1
+        a = txy1[i0][0]
+        txy1[i0][0] = txy1[i1][0]
+        txy1[i1][0] = a
+        a = txy1[i0][1]
+        txy1[i0][1] = txy1[i1][1]
+        txy1[i1][1] = a
+      i0 += 1
+  ## find match between xy0,txy1 (this can be speeded up by exploiting sorted order)
+  ix01 = [0 for i in range(n0)]
+  ix10 = [0 for i in range(n1)]
+  for i0 in range(0, n0):
+    ix01[i0] = -1
+  for i1 in range(0, n1):
+    ix10[i1] = -1
+  for i0 in range(0, n0):
+    a = -1.0
+    for i1 in range(0, n1):
+      x = xy0[i0][0] - txy1[i1][0]
+      x *= x
+      y = xy0[i0][1] - txy1[i1][1]
+      y *= y
+      x += y
+      if x < max_errr:
+        if a < 0.0 or a > x:
+          a = x
+          ix01[i0] = i1
+          ix10[i1] = i0
+  ## find the closest stars from unmatched stars
+  a = -1.0
+  wi0 = -1
+  wi1 = -1
+  for i0 in range(0, n0):
+    if ix01[i0] < 0:
+      for i1 in range(0, n1):
+        if ix10[i1] < 0:
+          x = xy0[i0][0] - txy1[i1][0]
+          x *= x
+          y = xy0[i0][1] - txy1[i1][1]
+          y *= y
+          x += y
+          if wi0 < 0 or a > x:
+            a = x
+            wi0 = i0
+            wi1 = i1
+
+  print(wi0, wi1)
+  print(xy0[wi0][0], xy0[wi0][1])
+  print(txy1[wi1][0], txy1[wi1][1])
 
 
-##
-def compare_signatures(signaturea, signatureb):
-  # sig_lista will be X
-  sig_lista = signaturea[:]
-  # sig_listb will be Y
-  sig_listb = signatureb[:]
-
-  whichList = None
-  prevWhichList = None
-  prev = None
-  Bm, Bf = 0, 0
-  p = 20
-  firstIteration = True
-  # while X and Y are not empty
-
-  while len(sig_lista) + len(sig_listb) != 0:
-    # Call the element at the front of X x, and the element at the front of Y y.
-    # Let z be the smaller of x and y, and set whichList to the ID of the list (X or Y) that z came from.
-    if len(sig_lista) > 0:
-      x = sig_lista[0]
-    else:
-      x = float('inf')
-    if len(sig_listb) > 0:
-      y = sig_listb[0]
-    else:
-      y = float('inf')
-
-    if x < y:
-      z = x
-      whichList = sig_lista
-    # elif y < x:
-    else:
-      z = y
-      whichList = sig_listb
-
-    # Remove the first element (z) from the list named by whichList.
-    del whichList[0]
-
-    # If whichList == prevWhichList (i.e. if the previous smallest number,
-    # prev, was also from the same list as z), or if this is the first iteration,
-    # then set newBm = min(Bf + p, Bm) + p.
-    if whichList == prevWhichList or firstIteration:
-      if (firstIteration):
-        newBm = min(Bf + p, Bm)
-      else:
-        newBm = min(Bf + p, Bm) + p
-    # Otherwise, it's possible to match z with the previous number written out,
-    # so set newBm = Bf + score(z, prev).
-    else:
-      newBm = Bf + score(z, prev)
-
-    # Set Bf = min(Bf + p, Bm).
-    Bf = min(Bf + p, Bm)
-
-    #Set Bm = newBm.
-    Bm = newBm
-
-    # Set prev = z and prevWhichList = whichList.
-    prev = z
-    prevWhichList = whichList
-
-    firstIteration = False
-
-  # If X and Y are both empty, then halt. The final score is min(Bf + p, Bm)
-  final_score = min(Bf + p, Bm)
-  print(final_score)
-  return final_score
-
-def do_compare_signatures(signaturea, signatureb):
-  for i in range(0, len(signaturea)):
-    for j in range(0, len(signatureb)):
-      # [vector,[signature..], [to_vector..]]
-      score = compare_signatures(signaturea[i][1][:], signatureb[j][1][:])
-      # break
 
 
-## TEST
-a = [10, 20, 30, 40]
-b = [11, 18, 41, 50]
-c = [20, 30, 40, 10]
-compare_signatures(a, b)
-compare_signatures(a, a)
-compare_signatures(a, c)
-##
-# do_compare_signatures(signaturea, signatureb)
+compute()
