@@ -1,41 +1,52 @@
 #input
-# 16
-# [[f](e)({^}(g)([*]d)<-{f}>y){t}[{e}[c]b]]<a><t>
-# (g)(u(e))<[(z)y](  )[-]{{t}<x{{+} }>a[x](< >v)}x) >(-){w<x>}{h}()
-# <t]<<c<{(+)x}g[a>>>>(t)[(<<e>[((d)v)e]w>a){a} <->({(g)u<e>{w}}f)]
-# [z](+)[{u)h]{e}[g](f)<-><<x{t}<v>>(^)c>(}
-# ([t(u<d>)][w][d]([+((%)[ ]z)]z))<b[/<u>]{*}[u]><b>
-# <>((*[[%]h{d][b[w]]}[+]{<^>-})(^{%})h(^)(/)){w}(x)
-# <u>[x<x<+>>]<{d}[e]u>[<c[}]>{e}{b}{bd{b({+}x(g))(g)}e][h(b)]{{u}}
-# [{{b}-[-]}{-<(h)^>}%{f}](f){[{z}<x><%><b -]}
-# <f>[a<c>[a]]<*>{y}[<d>+]{<{g}d[}]>}({/}f)(x<+>)[(f){zg/(y<y>){g}]
-# [{v}{c[+]}{/}(x)(<<%{c}>{-<x>}x>(z[w])u<<b>z(%)(%)<%>>)]
-# <e><z {d}()(x<(c)e><w>(<f>[[b]/]b[{b} ][z])){u}
-# {(*){h}c}(%)(<{y}(+)u ){[y](h)x([x{c}(+)]<^{*}>e)}[+]<h{/}>
-# [t(u)<+>]({[ ]a}c){(*{h}[z])}{h}<[z]{x}e>
-# (y)(a)<w<-[ ] y{ }}>>{<a{+}{(<*>v{%})b}[e]>}{[z<g>]e}<b[u]>
-# <[{{b}c}y(g[h])]</>{+<x>}<g{*(a){ }}(y)>{^{x{[b]h}}}(h){y{u}}>( )
-# <v>( ){-<x><x>}<{c}(*)[*(b) {y}< >(%)><v>(*)
+# 17
+# <<+>([[*]^{f}] [-]<e[t](((%)v)t)[t]>)({%} )<+>><u>
+# <<[ ]a<u(y)<(c)z>{[{b}(+<z>)+[t( )]]<d><[%]a>c}>(f)>>{/}{^[f(b)]}
+# <g>{<a>e(w<a>(}(-(-))(d{-}< {+}>)[{z<g[y]>}[(+)b]]) )
+# ({ }<[%]/>{</<[z][b{*}]v><h>>v}{v}{h}<f>)
+# ([ (+)(b[v]<%>)])<z<g>{ }[<[z<a><d{h}>]< >z>[h{z}] [x][*]]({b}v)>
+# <{/(^{w )(d(t))}><f[f](c(e)<x>(a))[u]>[e[*]<g>{d}(v)]
+# [{<t>z{c <[ ]x>c[d](w)(u){ }(-<*<g>>)>}{*{d}{x}}}{-}]
+# <d( ){-}[ ]><[a(y)]+{/}<w> {e}[{[y{w}](<e(y)>*)e<< >y>}[/]][t{+}]
+# <><u>{x}{e ([f<t>]<y>{a}{%}b</>(t<d>){+})
+# [+[x]<c>][[x]y{/}]({t(f){ }[w]<w>}y{*{a}} h>)[]
+# <({*}z{{h}x})(+)[t]{*<u>(d< >)<u>[{ }(e)e]{d}}>
+# {b[a]}<{h}d</>>[v][[g( )]u[e]({)}uw]((b))
+# [ ]{}( ({{z}f{x}}{g}c)(t{%<v>(z)}(/){e}( )<x>))
+# <[%]{((-){^<(w)h>}g){h} (<*>{f} )}>[ ][v]{e[{/}v]}[t]
+# [v]([[/](+(%)(+))(w)(x{t})( [a])({{%]y}d<u>[v]){a<x>}e])[c(-)}
+# (<y>[[^]{e}+]([g]e<->[y])<h>[d(<{<*>x}<[*]*> ><y[e(^)]>a)]<v>)
+# <-(h)[v]>{t{a}}{d}[{v{-}<b>} ][(+ {b}<*>t][([ <d><->]%)]
 
-import re
+def is_left_bracket(c):
+  if c == '(' or c == '[' or c == '{' or c == '<':
+    return True
+  return False
+
+def is_right_bracket(c):
+  if c == ')' or c == ']' or c == '}' or c == '>':
+    return True
+  return False
+
+dict = {')':'(', ']':'[', '}':'{', '>':'<'}
 
 n = int(input())
 
-brackets = {
-  '(':')',
-  '[':']',
-  '{':'}',
-  '<':'>',
-  ')':'(',
-  ']':'[',
-  '}':'{',
-  '>':'<'
-}
-pattern = '[\(\)\[\]\{\}\<\>]+'
-
 for i in range(0, n):
-  string = input()
-  string = re.findall(pattern, string)
-  string = "".join(string)
+  line = input()
+  stack = []
+  is_ok = True
 
-  
+  for c in line:
+    if is_left_bracket(c):
+      stack.append(c)
+    elif is_right_bracket(c):
+      if len(stack) > 0 and stack[-1] == dict[c]:
+        stack.pop()
+      else:
+        is_ok = False
+        break
+  if is_ok and len(stack) == 0:
+    print("1 ", end="")
+  else:
+    print("0 ", end="")
